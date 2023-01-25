@@ -1,0 +1,50 @@
+﻿@model Blog.Models.User.UserRegisterViewModel
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+<div style="text-align:center">
+    <h2>Регистрация</h2>
+</div>
+<div id="form-wrapper">
+    <form method="post" asp-controller="User" asp-action="Register">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div id="auth">
+        <div class="form-group">
+            <label asp-for="FirstName"></label><br />
+            <input asp-for="FirstName" />
+            <span asp-validation-for="FirstName"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName"></label><br />
+            <input asp-for="LastName" />
+            <span asp-validation-for="LastName"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Login"></label><br />
+            <input asp-for="Login" />
+            <span asp-validation-for="Login"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email"></label><br />
+            <input asp-for="Email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password"></label><br />
+            <input asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PasswordConfirmation"></label><br />
+            <input asp-for="PasswordConfirmation" />
+            <span asp-validation-for="PasswordConfirmation"></span>
+        </div>
+    </div>
+    <div id="auth-other">
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit" value="Зарегистрироваться" />
+        </div>
+    </div>
+    </form>
+</div>

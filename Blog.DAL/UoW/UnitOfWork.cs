@@ -49,7 +49,6 @@ namespace Blog.DAL.UoW
             }
 
             return (IRepository<TEntity>)_repositories[type];
-
         }
 
         public int SaveChanges(bool ensureAutoHistory = false)

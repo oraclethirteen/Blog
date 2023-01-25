@@ -14,11 +14,11 @@ namespace Blog.DAL.Models.Config
 
             builder.HasOne(x => x.User)
                    .WithMany(t => t.UserRoles)
-                   .HasForeignKey(x => x.UserId);
+                   .HasForeignKey(c => c.UserId);
 
             builder.HasOne(x => x.Role)
                    .WithMany(t => t.UserRoles)
-                   .HasForeignKey(x => x.RoleId);
+                   .HasForeignKey(c => c.RoleId);
         }
     }
 }

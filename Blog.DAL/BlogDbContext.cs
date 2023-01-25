@@ -1,5 +1,7 @@
-﻿using Blog.DAL.Models.Config;
+﻿using Blog.DAL.Models;
+using Blog.DAL.Models.Config;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.DAL
 {
@@ -8,6 +10,8 @@ namespace Blog.DAL
     /// </summary>
     public class BlogDbContext : DbContext
     {
+        ServiceCollection _serviceProvider = new ServiceCollection();
+
         public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options)
         {
 
@@ -16,14 +20,19 @@ namespace Blog.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+
+            if (!optionsBuilder.IsConfigured)
+            {
+
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new ArticleTagConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new ArticleTagConfiguration());
         }
     }
 }

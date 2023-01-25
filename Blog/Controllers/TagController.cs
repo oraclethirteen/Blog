@@ -2,7 +2,7 @@
 using Blog.DAL.Models;
 using Blog.DAL.Repository;
 using Blog.DAL.UoW;
-using Blog.Models;
+using Blog.Models.Tag;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +24,17 @@ namespace Blog.Controllers
             _tagRepository = (Repository<Tag>)_UoW.GetRepository<Tag>();
         }
 
+        [AllowAnonymous]
+        [Route("AddTag")]
+        [HttpGet]
+        public IActionResult Add()
+        {
+            return View();
+        }
+
         [Route("AddTag")]
         [HttpPost]
-        public async Task<string> Add(TagEditViewModel newTag, int userId)
+        public async Task<string> AddTag(TagEditViewModel newTag, int userId)
         {
             if (ModelState.IsValid)
             {
@@ -51,22 +59,24 @@ namespace Blog.Controllers
             return _mapper.Map<TagViewModel>(tag);
         }
 
-        [Authorize]
         [HttpGet]
-        [Route("TagList")]
-        public List<TagViewModel> GetTagList()
+        public async Task<IActionResult> TagList()
         {
-            List<TagViewModel> resultTagList = new List<TagViewModel>();
+            var tagList = await Task.FromResult(_tagRepository.GetAll());
+            List<TagViewModel> resultTagList = _mapper.Map<List<TagViewModel>>(tagList);
 
-            var tagList = _tagRepository.GetAll();
-
-            foreach (Tag tag in tagList)
-            {
-                resultTagList.Add(_mapper.Map<TagViewModel>(tag));
-            }
-
-            return resultTagList;
+            return View(resultTagList);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditTag(int id)
+        {
+            Tag tag = await _tagRepository.Get(id);
+            TagEditViewModel tagEdit = _mapper.Map<TagEditViewModel>(tag);
+
+            return View(tagEdit);
+        }
+
 
         [Authorize]
         [Route("EditTag")]
@@ -101,6 +111,6 @@ namespace Blog.Controllers
 
             await _tagRepository.Delete(tag);
             return "Тег успешно удалён";
-        }
+        } 
     }
 }

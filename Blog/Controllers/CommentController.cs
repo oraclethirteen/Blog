@@ -2,7 +2,7 @@
 using Blog.DAL.Models;
 using Blog.DAL.Repository;
 using Blog.DAL.UoW;
-using Blog.Models;
+using Blog.Models.Comment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +43,6 @@ namespace Blog.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("Comment")]
         public async Task<CommentViewModel> GetComment(int commentId)
         {
             CommentViewModel resultComment = new CommentViewModel();
@@ -53,21 +52,13 @@ namespace Blog.Controllers
             return _mapper.Map<CommentViewModel>(comment);
         }
 
-        [Authorize]
         [HttpGet]
-        [Route("CommentList")]
-        public List<CommentViewModel> GetCommentList()
+        public async Task<IActionResult> CommentList()
         {
-            List<CommentViewModel> resultCommentList = new List<CommentViewModel>();
+            var commentList = await Task.FromResult(_commentRepository.GetAll());
+            List<CommentViewModel> resultCommetList = _mapper.Map<List<CommentViewModel>>(commentList);
 
-            var commentList = _commentRepository.GetAll();
-
-            foreach (Comment comment in commentList)
-            {
-                resultCommentList.Add(_mapper.Map<CommentViewModel>(comment));
-            }
-
-            return resultCommentList;
+            return View(resultCommetList);
         }
 
         [Authorize]
@@ -89,7 +80,6 @@ namespace Blog.Controllers
             }
         }
 
-
         [Authorize]
         [Route("DeleteComment")]
         [HttpDelete]
@@ -103,6 +93,6 @@ namespace Blog.Controllers
 
             await _commentRepository.Delete(comment);
             return "Комментарий успешно удалён";
-        }  
+        }
     }
 }

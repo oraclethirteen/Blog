@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Authentication;
 using System.Security.Claims;
 using Blog.Models;
+using Blog.BLL.Models;
+using Blog.Models.User;
+using Blog.Models.Role;
 
 namespace Blog.Controllers
 {
     /// <summary>
     /// Класс контроллера, реализующий основные CRUD-операции пользователя
-    /// </summary>
-    [Authorize]
+    /// </summary>Ц
     public class UserController : Controller
     {
         private IMapper _mapper;
@@ -34,34 +35,40 @@ namespace Blog.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        [Route("Authenticate")]
-        public async Task<UserViewModel> Authenticate(string login, string password)
+        [HttpGet]
+        public IActionResult Authenticate()
         {
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Authenticate(UserAuthenticateViewModel model)
+        {
+            if (ModelState.IsValid)
             {
-                throw new ArgumentNullException("Запрос не корректен");
+                User user = _userRepository.GetByLogin(model.Login);
+
+                if (user != null && user.Password == model.Password)
+                {
+                    UserDomain userDomain = UserDomain.CreateUserDomain(user);
+                    await Authenticate(userDomain);
+                    return RedirectToAction("ArticleList", "Article");
+
+                }
+                ModelState.AddModelError("", "Некорректный логин и (или) пароль");
             }
 
-            User user = _userRepository.GetByLogin(login);
+            return View(model);
+        }
 
-            if (user is null)
-            {
-                throw new AuthenticationException("Пользователь не найден");
-            }
-
-            if (user.Password != password)
-            {
-                throw new AuthenticationException("Введенный пароль не корректен");
-            }
-
-            _userRoleRepository.GetAll();
-            _roleRepository.GetAll();
-
+        private async Task Authenticate(UserDomain userDomain)
+        {
+            // Создание клаймов логина и ролей
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.UserRoles.FirstOrDefault().Role.Title)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, userDomain.Login),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, userDomain.Roles.FirstOrDefault()?.Title)
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,
@@ -69,12 +76,20 @@ namespace Blog.Controllers
                 ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
 
+            // Установка куки аутентификации
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity));
-
-            return _mapper.Map<UserViewModel>(user);
         }
 
+        [AllowAnonymous]
+        [Route("Register")]
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View("Register");
+        }
+
+        [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
         public async Task<string> Register(UserRegisterViewModel newUser)
@@ -83,7 +98,7 @@ namespace Blog.Controllers
             {
                 var user = _mapper.Map<User>(newUser);
 
-                UserRole userRole = new UserRole { User = user, RoleId = 3 /*Id роли пользованель*/ };
+                UserRole userRole = new UserRole { User = user, RoleId = 3 };
                 user.UserRoles.Add(userRole);
 
                 await _userRepository.Create(user);
@@ -91,6 +106,12 @@ namespace Blog.Controllers
                 return "Действие выполнено успешно";
             }
             return string.Join("\r\n", ModelState.Values.SelectMany(v => v.Errors));
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
         }
 
         [Authorize]
@@ -105,21 +126,30 @@ namespace Blog.Controllers
             return _mapper.Map<UserViewModel>(user);
         }
 
-        [Authorize(Roles = "Aдминистратор")]
         [HttpGet]
-        [Route("UserList")]
-        public List<UserViewModel> GetUserList()
+        public async Task<IActionResult> UserList()
         {
-            List<UserViewModel> resultUserList = new List<UserViewModel>();
+            var userList = await Task.FromResult(_userRepository.GetAll());
+            List<UserViewModel> resultUserList = _mapper.Map<List<UserViewModel>>(userList);
 
-            var userList = _userRepository.GetAll();
+            return View(resultUserList);
+        }
 
-            foreach (User user in userList)
+        [HttpGet]
+        public async Task<IActionResult> EditUser(int id)
+        {
+            User user = await _userRepository.Get(id);
+            List<Role> allRoles = await Task.FromResult(_roleRepository.GetAll().ToList());
+            UserEditViewModel userEdit = _mapper.Map<UserEditViewModel>(user);
+
+            userEdit.CheckRoles = allRoles.Select(r => new CheckRoleViewModel
             {
-                resultUserList.Add(_mapper.Map<UserViewModel>(user));
-            }
+                Id = r.Id,
+                Title = r.Title,
+                Checked = user.UserRoles.Any(ur => ur.RoleId == r.Id)
+            }).ToList();
 
-            return resultUserList;
+            return View(userEdit);
         }
 
         [Authorize]
@@ -154,6 +184,6 @@ namespace Blog.Controllers
 
             await _userRepository.Delete(user);
             return "Пользователь успешно удалён";
-        }  
+        }
     }
 }

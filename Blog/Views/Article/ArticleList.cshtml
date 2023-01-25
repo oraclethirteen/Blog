@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Blog.Models.Article.ArticleViewModel>
+
+@{
+    ViewData["Title"] = "ArticleList";
+}
+
+<p>
+    <a asp-controller="Article" asp-action="AddArticle">Добавить статью</a>
+</p>
+@foreach (var article in Model)
+{
+    <div class="form-group">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a asp-controller="Article" asp-action="ViewArticle" asp-route-id="@article.Id">@article.Title</a>
+                </h5>
+                <div>
+                    @foreach (var tag in article.Tags)
+                    {
+                        <span class="badge bg-success text-light">@tag.Title</span>
+                    }
+                </div>
+                <div>
+                    @if (User.IsInRole("Aдминистратор"))
+                    {
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-outline-secondary">
+                                <a asp-controller="Article" asp-action="EditArticle" asp-route-id="@article.Id">Редактировать</a>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger">Удалить</button>
+                        </div>
+                    }
+                    <div class="card-text text-right">Просмотров: @article.Views</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+

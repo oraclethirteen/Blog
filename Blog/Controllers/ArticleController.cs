@@ -2,10 +2,10 @@
 using Blog.DAL.Models;
 using Blog.DAL.Repository;
 using Blog.DAL.UoW;
-using Blog.Models;
+using Blog.Models.Article;
+using Blog.Models.Tag;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 
 namespace Blog.Controllers
 {
@@ -17,24 +17,37 @@ namespace Blog.Controllers
         private IMapper _mapper;
         private IUnitOfWork _UoW;
         private Repository<Article> _articleRepository;
+        private Repository<Tag> _tagRepository;
 
         public ArticleController(IMapper mapper, IUnitOfWork UoW)
         {
             _mapper = mapper;
             _UoW = UoW;
             _articleRepository = (Repository<Article>)_UoW.GetRepository<Article>();
+            _tagRepository = (Repository<Tag>)_UoW.GetRepository<Tag>();
         }
 
-        [Route("AddArticle")]
+        [HttpGet]
+        public async Task<IActionResult> AddArticle()
+        {
+
+            ArticleEditViewModel article = new ArticleEditViewModel();
+
+            var tags = await Task.FromResult(_tagRepository.GetAll());
+
+            article.CheckTags = tags.Select(t => new CheckTagViewModel { Id = t.Id, Title = t.Title, Checked = false }).ToList();
+
+            return View(article);
+        }
+
         [HttpPost]
-        public async Task<string> Add(ArticleEditViewModel newArticle, int userId)
+        public async Task<string> AddArticle(ArticleEditViewModel newArticle)
         {
             if (ModelState.IsValid)
             {
                 var article = _mapper.Map<Article>(newArticle);
 
                 article.Date = DateTime.Now;
-                article.UserId = userId;
 
                 await _articleRepository.Create(article);
                 return "Действие выполнено успешно";
@@ -42,37 +55,47 @@ namespace Blog.Controllers
             return string.Join("\r\n", ModelState.Values.SelectMany(v => v.Errors));
         }
 
-        [Authorize]
         [HttpGet]
-        [Route("Article")]
-        public async Task<ArticleViewModel> GetArticle(int articleId)
+        public async Task<IActionResult> ViewArticle(int id)
         {
-            ArticleViewModel resultArticle = new ArticleViewModel();
+            Article article = (await Task.FromResult(_articleRepository.Get(p => p.Id == id,
+                null,
+                "ArticleTags",
+                "User",
+                "Comments"))).Result.FirstOrDefault();
 
-            Article article = await _articleRepository.Get(articleId);
+            List<Tag> allTags = await Task.FromResult(_tagRepository.GetAll().ToList());
+            ArticleViewModel articleView = _mapper.Map<ArticleViewModel>(article);
 
-            return _mapper.Map<ArticleViewModel>(article);
+            return View(articleView);
         }
 
-        [Authorize]
         [HttpGet]
-        [Route("ArticleList")]
-        public List<ArticleViewModel> GetArticleList()
+        public async Task<IActionResult> ArticleList()
         {
-            List<ArticleViewModel> resultArticleList = new List<ArticleViewModel>();
+            var articleList = await Task.FromResult(_articleRepository.GetAll());
+            List<ArticleViewModel> resultArticleList = _mapper.Map<List<ArticleViewModel>>(articleList);
 
-            var articleList = _articleRepository.GetAll();
+            return View(resultArticleList);
+        }
 
-            foreach (Article article in articleList)
+        [HttpGet]
+        public async Task<IActionResult> EditArticle(int id)
+        {
+            Article article = (await Task.FromResult(_articleRepository.Get(p => p.Id == id, null, "ArticleTags"))).Result.FirstOrDefault();
+            List<Tag> allTags = await Task.FromResult(_tagRepository.GetAll().ToList());
+            ArticleEditViewModel articleEdit = _mapper.Map<ArticleEditViewModel>(article);
+            articleEdit.CheckTags = allTags.Select(t => new CheckTagViewModel
             {
-                resultArticleList.Add(_mapper.Map<ArticleViewModel>(article));
-            }
+                Id = t.Id,
+                Title = t.Title,
+                Checked = article.ArticleTags.Any(pt => pt.TagId == t.Id)
+            }).ToList();
 
-            return resultArticleList;
+            return View(articleEdit);
         }
 
-        [Authorize]
-        [Route("EditArticle")]
+        //[Authorize]
         [HttpPut]
         public async Task<string> Update(ArticleEditViewModel model)
         {
@@ -103,7 +126,7 @@ namespace Blog.Controllers
             }
 
             await _articleRepository.Delete(article);
-            return "Пост успешно удалён";
-        }
+            return "Действие выполнено успешно";
+        }  
     }
 }
