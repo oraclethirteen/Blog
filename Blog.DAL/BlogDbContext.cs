@@ -1,5 +1,4 @@
-﻿using Blog.DAL.Models;
-using Blog.DAL.Models.Config;
+﻿using Blog.DAL.Models.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

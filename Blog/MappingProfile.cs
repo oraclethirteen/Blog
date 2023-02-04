@@ -6,6 +6,7 @@ using Blog.Models.Comment;
 using Blog.Models.Role;
 using Blog.Models.Tag;
 using Blog.Models.User;
+using Microsoft.Extensions.Hosting;
 
 namespace Blog
 {
@@ -25,6 +26,12 @@ namespace Blog
                 .ForMember(dst => dst.Author, src => src.MapFrom(c => c.User.Email));
             CreateMap<Article, ArticleEditViewModel>();
             CreateMap<Article, ArticleCustomViewModel>();
+            CreateMap<ArticleEditViewModel, Article>()
+                .ForMember(dst => dst.ArticleTags,
+                           src => src.MapFrom(c => c.CheckTags
+                                                .Where(t => t.Checked)
+                                                .Select(t => new ArticleTag { TagId = t.Id })));
+
 
             CreateMap<ArticleTag, TagViewModel>()
                 .ForMember(dst => dst.Id, src => src.MapFrom(c => c.TagId))

@@ -2,6 +2,9 @@
 
 namespace Blog.BLL.Models
 {
+    /// <summary>
+    /// Доменный класс пользователя
+    /// </summary>
     public class UserDomain
     {
         public ICollection<Role> Roles { get; set; }

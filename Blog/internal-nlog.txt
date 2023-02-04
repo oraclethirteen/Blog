@@ -1,0 +1,33 @@
+2023-02-01 03:23:55.5777 Info Message Template Auto Format enabled
+2023-02-01 03:23:55.5961 Info Loading assembly: NLog.Web.AspNetCore
+2023-02-01 03:23:55.6929 Info Adding target FileTarget(Name=AllFile)
+2023-02-01 03:23:55.6929 Info Adding target FileTarget(Name=AllErrorFile)
+2023-02-01 03:23:55.6929 Info Adding target FileTarget(Name=AllInfoFile)
+2023-02-01 03:23:55.6929 Info Adding target FileTarget(Name=LogRequestFile)
+2023-02-01 03:23:55.6929 Info Adding target FileTarget(Name=LogControllerFile)
+2023-02-01 03:23:55.6929 Info Adding target ConsoleTarget(Name=lifetimeConsole)
+2023-02-01 03:23:55.7217 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: Microsoft.Hosting.Lifetime.
+2023-02-01 03:23:55.7470 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config
+2023-02-01 03:23:57.2312 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config
+2023-02-01 03:24:33.2899 Info Message Template Auto Format enabled
+2023-02-01 03:24:33.3057 Info Loading assembly: NLog.Web.AspNetCore
+2023-02-01 03:24:33.4250 Info Adding target FileTarget(Name=AllFile)
+2023-02-01 03:24:33.4273 Info Adding target FileTarget(Name=AllErrorFile)
+2023-02-01 03:24:33.4273 Info Adding target FileTarget(Name=AllInfoFile)
+2023-02-01 03:24:33.4273 Info Adding target FileTarget(Name=LogRequestFile)
+2023-02-01 03:24:33.4273 Info Adding target FileTarget(Name=LogControllerFile)
+2023-02-01 03:24:33.4273 Info Adding target ConsoleTarget(Name=lifetimeConsole)
+2023-02-01 03:24:33.4605 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: Microsoft.Hosting.Lifetime.
+2023-02-01 03:24:33.4898 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config
+2023-02-01 03:24:35.0894 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config
+2023-02-01 03:25:34.8533 Info Message Template Auto Format enabled
+2023-02-01 03:25:34.8734 Info Loading assembly: NLog.Web.AspNetCore
+2023-02-01 03:25:34.9826 Info Adding target FileTarget(Name=AllFile)
+2023-02-01 03:25:34.9826 Info Adding target FileTarget(Name=AllErrorFile)
+2023-02-01 03:25:34.9826 Info Adding target FileTarget(Name=AllInfoFile)
+2023-02-01 03:25:34.9826 Info Adding target FileTarget(Name=LogRequestFile)
+2023-02-01 03:25:34.9826 Info Adding target FileTarget(Name=LogControllerFile)
+2023-02-01 03:25:34.9897 Info Adding target ConsoleTarget(Name=lifetimeConsole)
+2023-02-01 03:25:35.0126 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: Microsoft.Hosting.Lifetime.
+2023-02-01 03:25:35.0516 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config
+2023-02-01 03:25:37.2088 Info Validating config: Targets=6, ConfigItems=98, FilePath=D:\Documents\VS\SF\Blog\Blog\bin\Debug\net6.0\NLog.config

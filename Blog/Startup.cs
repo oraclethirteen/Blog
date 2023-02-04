@@ -1,16 +1,22 @@
 ﻿using AutoMapper;
 using Blog.DAL;
 using Blog.DAL.UoW;
+using Blog.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Web;
 
 namespace Blog
 {
     public class Startup
     {
+        Logger _logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _logger.Debug("init main");
         }
 
         public IConfiguration Configuration { get; }
@@ -75,12 +81,16 @@ namespace Blog
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
+                // Глобальный обработчик исключений
+                app.UseErrorHandler();
+                // Использование HTTPS (принудительно)
+                app.UseHsts();
             }
-            //Перенаправление всех запросов с HTTP на HTTPS.
-            app.UseHttpsRedirection();
+
+            // Обработка ошибок HTTP
+            //app.UseStatusCodePages();
+            //app.UseStatusCodePagesWithRedirects();
+            //app.UseStatusCodePagesWithReExecute();
 
             // Отдача статических файлов клиенту
             app.UseStaticFiles();
@@ -90,7 +100,7 @@ namespace Blog
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //Компонент для логирования запросов
+            // Компонент для логирования запросов
             app.Use(async (context, next) =>
             {
                 // Применяется свойство объекта HttpContext

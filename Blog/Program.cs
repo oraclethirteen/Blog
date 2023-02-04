@@ -1,3 +1,6 @@
+using NLog;
+using NLog.Web;
+
 namespace Blog
 {
     /// <summary>
@@ -7,7 +10,24 @@ namespace Blog
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+
+            try
+            {
+                logger.Debug("Запуск приложения ...");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception exception)
+            {
+                // Запись ошибки в лог
+                logger.Error(exception, "Program stopped because of exception");
+                throw;
+            }
+            finally
+            {
+                // Отключение логгера перед выходом из приложения
+                NLog.LogManager.Shutdown();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -15,6 +35,11 @@ namespace Blog
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                }).UseNLog();
     }
 }

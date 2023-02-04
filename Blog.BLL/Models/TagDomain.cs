@@ -2,6 +2,9 @@
 
 namespace Blog.BLL.Models
 {
+    /// <summary>
+    /// Доменный класс тега
+    /// </summary>
     public class TagDomain
     {
         public ICollection<Article> Articles { get; set; }
