@@ -1,26 +1,25 @@
-﻿@model Blog.Models.User.UserEditViewModel
+﻿@model Blog.Models.UserEditViewModel
 
 @{
     ViewData["Title"] = "Редактирование пользователя";
 }
 
-
 <h4>Редактирование пользователя</h4>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="EditUserView">
+        <form asp-action="EditUser" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 @for (int i = 0; i < Model.CheckRoles.Count(); i++)
                 {
-                    <input asp-for="CheckRoles[i].Id" type="hidden" />
-                    <input asp-for="CheckRoles[i].Checked" type="checkbox" />
+                    <input asp-for="CheckRoles[i].Id" type="hidden"/>
+                    <input asp-for="CheckRoles[i].Checked" type="checkbox"/>
                     <label asp-for="CheckRoles[i].Title">@Model.CheckRoles[i].Title</label>
                 }
             </div>
             <div class="form-group">
-                <input asp-for="Id" class="form-control" type="hidden" />
+                <input asp-for="Id" class="form-control" type="hidden"/>
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -49,9 +48,9 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PasswordConfirmation" class="control-label"></label>
-                <input asp-for="PasswordConfirmation" class="form-control" />
-                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
+                <label asp-for="PasswordConfirm" class="control-label"></label>
+                <input asp-for="PasswordConfirm" class="form-control" />
+                <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
@@ -61,6 +60,6 @@
 </div>
 
 <div>
-    <a asp-action="Index">Список всех пользователей</a>
+    <a asp-action="UserList">Список всех пользователей</a>
 </div>
 

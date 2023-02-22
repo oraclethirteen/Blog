@@ -1,5 +1,6 @@
 ﻿namespace Blog.Middlewares
 {
+   
     public class LogMiddleware
     {
         private readonly RequestDelegate _next;
@@ -14,7 +15,7 @@
         public async Task Invoke(HttpContext httpContext)
         {
             string userName = string.IsNullOrEmpty(httpContext.User.Identity.Name) ? "Anonymous" : httpContext.User.Identity.Name;
-
+            
             _logger.LogInformation($"Метод: {httpContext.Request.Method}; Путь: {httpContext.Request.Path}; Пользователь: {userName};");
             await _next.Invoke(httpContext);
         }

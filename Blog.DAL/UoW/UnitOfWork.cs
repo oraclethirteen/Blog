@@ -3,9 +3,7 @@ using Blog.DAL.Repository;
 
 namespace Blog.DAL.UoW
 {
-    /// <summary>
-    /// Хранилище всех репозиториев проекта
-    /// </summary>
+    // Хранилище всех репозиториев проекта
     public class UnitOfWork : IUnitOfWork
     {
         private BlogDbContext _dbContext;
@@ -34,7 +32,6 @@ namespace Blog.DAL.UoW
             if (hasCustomRepository)
             {
                 var modelType = typeof(TEntity);
-
                 if (_customRepositories.ContainsKey(modelType))
                 {
                     return (IRepository<TEntity>)_customRepositories[modelType];
@@ -42,7 +39,6 @@ namespace Blog.DAL.UoW
             }
 
             var type = typeof(TEntity);
-
             if (!_repositories.ContainsKey(type))
             {
                 _repositories[type] = new Repository<TEntity>(_dbContext);

@@ -1,8 +1,6 @@
-﻿namespace Blog.Models.Article
+﻿namespace Blog.Models
 {
-    /// <summary>
-    /// Облегчённая модель статьи
-    /// </summary>
+    // "Облегчённая" модель статьи
     public class ArticleCustomViewModel
     {
         public int Id { get; set; }

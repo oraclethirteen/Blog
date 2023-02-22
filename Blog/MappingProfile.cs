@@ -1,61 +1,56 @@
 ﻿using AutoMapper;
+using Blog.Models;
 using Blog.BLL.Models;
-using Blog.DAL.Models;
-using Blog.Models.Article;
-using Blog.Models.Comment;
-using Blog.Models.Role;
-using Blog.Models.Tag;
-using Blog.Models.User;
-using Microsoft.Extensions.Hosting;
 
 namespace Blog
 {
-    /// <summary>
-    /// Класс, реализующий маппинги
-    /// </summary>
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<User, UserEditViewModel>();
-            CreateMap<User, UserViewModel>()
-                .ForMember(dst => dst.Roles, src => src.MapFrom(c => c.UserRoles));
-
-            CreateMap<Article, ArticleViewModel>()
-                .ForMember(dst => dst.Tags, src => src.MapFrom(c => c.ArticleTags))
+            // Article
+            CreateMap<ArticleDomain, ArticleViewModel>()
+                .ForMember(dst => dst.Tags, src => src.MapFrom(c => c.Tags))
                 .ForMember(dst => dst.Author, src => src.MapFrom(c => c.User.Email));
-            CreateMap<Article, ArticleEditViewModel>();
-            CreateMap<Article, ArticleCustomViewModel>();
-            CreateMap<ArticleEditViewModel, Article>()
-                .ForMember(dst => dst.ArticleTags,
+
+            CreateMap<ArticleDomain, ArticleEditViewModel>();
+            CreateMap<ArticleDomain, ArticleCustomViewModel>();
+            CreateMap<ArticleEditViewModel, ArticleDomain>()
+                .ForMember(dst => dst.Tags,
                            src => src.MapFrom(c => c.CheckTags
-                                                .Where(t => t.Checked)
-                                                .Select(t => new ArticleTag { TagId = t.Id })));
+                                                    .Where(t => t.Checked)
+                                                    .Select(t => new TagDomain { Id = t.Id })));
 
-
-            CreateMap<ArticleTag, TagViewModel>()
-                .ForMember(dst => dst.Id, src => src.MapFrom(c => c.TagId))
-                .ForMember(dst => dst.Title, src => src.MapFrom(c => c.Tag.Title));
-            CreateMap<ArticleTag, TagCustomViewModel>()
-                .ForMember(dst => dst.Id, src => src.MapFrom(c => c.TagId))
-                .ForMember(dst => dst.Title, src => src.MapFrom(c => c.Tag.Title));
-
-            CreateMap<Comment, CommentViewModel>()
+            // Comment
+            CreateMap<CommentDomain, CommentViewModel>()
                 .ForMember(dst => dst.Author, src => src.MapFrom(c => c.User.Email));
-            CreateMap<Comment, CommentEditViewModel>();
+            CreateMap<CommentDomain, CommentEditViewModel>();
+            CreateMap<CommentEditViewModel, CommentDomain>();
 
-            CreateMap<Tag, TagViewModel>()
-                .ForMember(dst => dst.Articles, srs => srs.MapFrom(c => c.ArticleTags));
-            CreateMap<Tag, TagEditViewModel>();
+            // Role
+            CreateMap<RoleDomain, RoleViewModel>();
+            CreateMap<RoleDomain, RoleEditViewModel>();
+            CreateMap<RoleEditViewModel, RoleDomain>();
 
+            // Tag
             CreateMap<TagDomain, TagViewModel>();
+            CreateMap<TagDomain, TagCustomViewModel>();
+            CreateMap<TagDomain, TagEditViewModel>();
+            CreateMap<TagEditViewModel, TagDomain>();
 
-            CreateMap<Role, RoleViewModel>();
-            CreateMap<Role, RoleEditViewModel>();
+            // User
+            CreateMap<UserDomain, UserRegisterViewModel>();
+            CreateMap<UserRegisterViewModel, UserDomain>();
 
-            CreateMap<UserRole, RoleViewModel>()
-                .ForMember(dst => dst.Id, src => src.MapFrom(c => c.RoleId))
-                .ForMember(dst => dst.Title, src => src.MapFrom(c => c.Role.Title));
+            CreateMap<UserDomain, UserEditViewModel>();
+            CreateMap<UserEditViewModel, UserDomain>()
+                .ForMember(dst => dst.Roles,
+                           src => src.MapFrom(c => c.CheckRoles
+                                                    .Where(r => r.Checked)
+                                                    .Select(r => new RoleDomain { Id = r.Id, Title = r.Title })));
+
+            CreateMap<UserDomain, UserViewModel>()
+                .ForMember(dst => dst.Roles, src => src.MapFrom(c => c.Roles)); 
         }
     }
 }

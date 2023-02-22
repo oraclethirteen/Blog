@@ -1,8 +1,6 @@
-﻿namespace Blog.Models.Tag
+﻿namespace Blog.Models
 {
-    /// <summary>
-    /// Облегчённая модель тега
-    /// </summary>
+    // "Облегчённая" модель тега
     public class TagCustomViewModel
     {
         public int Id { get; set; }

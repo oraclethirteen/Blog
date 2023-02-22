@@ -20,7 +20,7 @@
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                httpContext.Response.Redirect("/Error/Oops");
+                httpContext.Response.Redirect("/Error/Err");
             }
         }
     }

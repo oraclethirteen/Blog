@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Models.Role
+namespace Blog.Models
 {
     public class RoleEditViewModel
     {
@@ -8,7 +8,12 @@ namespace Blog.Models.Role
 
         [Required(ErrorMessage = "* поле 'Название' обязательно для заполнения")]
         [DataType(DataType.Text)]
-        [Display(Name = "Наименование", Prompt = "Введите название")]
+        [Display(Name = "Название", Prompt = "Введите название")]
         public string Title { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        [Display(Name = "Описание", Prompt = "Введите описание")]
+        public string Description { get; set; }
+
     }
 }

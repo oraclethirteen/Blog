@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
-namespace Blog.Models.User
+namespace Blog.Models
 {
     public class UserAuthenticateViewModel
     {
@@ -13,7 +12,7 @@ namespace Blog.Models.User
         [Required(ErrorMessage = "* поле 'Пароль' обязательно для заполнения")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль", Prompt = "Введите пароль")]
-        [StringLength(10, ErrorMessage = "* поле {0} должно иметь от {2} до {1} символов.", MinimumLength = 5)]
+        [StringLength(100, ErrorMessage = "* поле {0} должно иметь от {2} до {1} символов", MinimumLength = 5)]
         public string Password { get; set; }
     }
 }

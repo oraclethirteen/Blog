@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Models.Tag
+namespace Blog.Models
 {
     public class TagEditViewModel
     {
@@ -10,6 +10,5 @@ namespace Blog.Models.Tag
         [DataType(DataType.Text)]
         [Display(Name = "Название", Prompt = "Введите название")]
         public string Title { get; set; }
-
     }
 }

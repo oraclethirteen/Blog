@@ -1,4 +1,4 @@
-﻿@model Blog.Models.Article.ArticleViewModel
+﻿@model Blog.Models.ArticleViewModel
 
 @{
     ViewData["Title"] = Model.Title;
@@ -19,23 +19,11 @@
 </div>
 <hr />
 <div class="card-text text-right">@Model.Author</div>
-
-<h6>Коментарии к статье</h6>
-<div class="form-floating">
-    <textarea class="form-control" placeholder="Ваш комментарий" id="floatingTextarea2" style="height: 100px"></textarea>
-</div>
-<div class="form-group">
-    <input type="submit" value="Оставить комментарий" class="btn btn-primary" />
-</div>
-
-@foreach (var comment in Model.Comments)
-{
-    <div class="card">
-        <div class="card-body">@comment.Content</div>
-    </div>
-    <p class="text-right">
-        <span class="badge bg-success text-light">@comment.Author</span>
-    </p>
-
+ 
+@{
+    await Html.RenderPartialAsync("_AddComment", new CommentEditViewModel{ ArticleId = Model.Id , Id = 0});
 }
 
+@{
+    await Html.RenderPartialAsync("../Comment/_ArticleCommentList", Model.Comments);
+}

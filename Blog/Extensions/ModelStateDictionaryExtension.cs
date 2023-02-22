@@ -12,7 +12,6 @@ namespace Blog.Extensions
                 .Select(e => e.ErrorMessage)
                 .ToList());
 
-
             errorList.AddRange(modelState.Values.SelectMany(m => m.Errors)
                 .Select(e => e.ErrorMessage)
                 .ToList());

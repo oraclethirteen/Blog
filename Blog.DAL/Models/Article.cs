@@ -10,6 +10,7 @@ namespace Blog.DAL.Models
         public Article()
         {
             ArticleTags = new ObservableCollection<ArticleTag>();
+            Comments = new ObservableCollection<Comment>();
         }
 
         public User User { get; set; }

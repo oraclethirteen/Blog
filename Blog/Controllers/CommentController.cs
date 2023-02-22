@@ -1,38 +1,34 @@
-﻿using AutoMapper;
-using Blog.DAL.Models;
-using Blog.DAL.Repository;
-using Blog.DAL.UoW;
-using Blog.Extensions;
-using Blog.Models.Comment;
+﻿using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Blog.Models;
+using Blog.Extensions;
+using Blog.BLL.Services;
+using Blog.BLL.Models;
+using Blog.BLL.Response;
 
 namespace Blog.Controllers
 {
-    /// <summary>
-    /// Класс контроллера, реализующий основные CRUD-операции комментария
-    /// </summary>
+    // Класс контроллера, реализующий основные CRUD-операции комментария
     public class CommentController : Controller
     {
         private readonly ILogger<UserController> _logger;
         private IMapper _mapper;
-        private IUnitOfWork _UoW;
-        private Repository<Comment> _commentRepository;
+        private ICommentService _commentService;
 
-        public CommentController(IMapper mapper, IUnitOfWork UoW, ILogger<UserController> logger)
+        public CommentController(IMapper mapper, ICommentService commentService, ILogger<UserController> logger)
         {
             _logger = logger;
             _mapper = mapper;
-            _UoW = UoW;
-            _commentRepository = (Repository<Comment>)_UoW.GetRepository<Comment>();
+            _commentService = commentService;
             _logger = logger;
         }
 
         /// <summary>
         /// Запрос представления добавления комментария
         /// </summary>
-        /// <param name="articleId">Идентификатор комментируемой статьи</param>
-        /// <returns>View добавления комментария</returns>
+        /// <param name="articleId"> Идентификатор комментируемой статьи </param>
+        /// <returns> View добавления комментария </returns>
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddComment(int articleId)
@@ -45,22 +41,22 @@ namespace Blog.Controllers
         /// <summary>
         /// Добавления комментария
         /// </summary>
-        /// <param name="newComment">Представление комментария</param>
-        /// <returns></returns>
+        /// <param name="newComment"> ViewModel комментария</param>
+        /// <returns> View комментария </returns>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddComment(CommentEditViewModel newComment)
         {
             if (ModelState.IsValid)
             {
-                var comment = _mapper.Map<Comment>(newComment);
-
-                comment.Date = DateTime.Now;
-                comment.UserId = User.Identity.GetUserId();
-
-                await _commentRepository.Create(comment);
-                _logger.LogInformation($"Пользователь {User.Identity.Name} добавил комментарий");
-                return View();
+                var comment = _mapper.Map<CommentDomain>(newComment);
+                comment.UserId = User.Identity.GeUsertId();
+                EntityBaseResponse<CommentDomain> result = await _commentService.Add(comment);
+                if (result.Success)
+                {
+                    _logger.LogInformation($"Пользователь {User.Identity.Name} добавил комментарий.");
+                    return RedirectToAction("ViewArticle", "Article", new { id = comment.ArticleId });
+                }
             }
             else
             {
@@ -73,88 +69,98 @@ namespace Blog.Controllers
         /// <summary>
         /// Редактирования комментария
         /// </summary>
-        /// <param name="model">Модель представления редактирования комментария</param>
-        /// <returns>строка результа</returns>
+        /// <param name="model"> ViewModel редактирования </param>
+        /// <returns> View комментария </returns>
         [Authorize]
-        [HttpPut]
-        public async Task<string> EditComment(CommentEditViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> EditComment(CommentEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var comment = await _commentRepository.Get(model.Id);
+                var comment = _mapper.Map<CommentDomain>(model);
 
-                await _commentRepository.Update(comment);
+                await _commentService.Update(comment);
 
-                return "Действие выполнено успешно";
+                return RedirectToAction("ArticleView", "Article", new { id = model.ArticleId });
             }
             else
             {
-                return string.Join("\r\n", ModelState.Values.SelectMany(v => v.Errors));
+                _logger.LogInformation(ModelState.GetAllError());
             }
+
+            return View(model);
         }
 
         /// <summary>
         /// Удаление комментария
         /// </summary>
-        /// <param name="commentId">Идентификатор комментария</param>
+        /// <param name="id"> Идентификатор комментария </param>
         /// <returns></returns>
         [Authorize]
-        [HttpDelete]
-        public async Task<string> Delete(int commentId)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
-            Comment comment = await _commentRepository.Get(commentId);
-            if (comment is null)
+            EntityBaseResponse<CommentDomain> comment = await _commentService.Get(id);
+
+            if (!comment.Success)
             {
-                return $"Статья (ID = {commentId}) не найдена";
+                return View("NotFound");
             }
 
-            await _commentRepository.Delete(comment);
-            _logger.LogInformation($"Пользователь {User.Identity.Name} удалил комментарий");
-            return "Пост удален.";
+            comment = await _commentService.Delete(comment.Entity);
+            if (comment.Success)
+            {
+                _logger.LogInformation($"Пользователь {User.Identity.Name} удалил комментарий.");
 
+            }
 
+            return RedirectToAction("CommentList");
         }
 
         /// <summary>
         /// Список всех комментариев
         /// </summary>
-        /// <returns></returns>
+        /// <returns> View списка комментариев </returns>
         [HttpGet]
         public async Task<IActionResult> CommentList()
         {
-            var commentList = await Task.FromResult(_commentRepository.GetAll());
-            List<CommentViewModel> resultCommetList = _mapper.Map<List<CommentViewModel>>(commentList);
+            var commentList = await Task.FromResult(_commentService.GetAll());
+            List<CommentViewModel> resultCommentList = _mapper.Map<List<CommentViewModel>>(commentList.Entity);
 
-            return View(resultCommetList);
+            return View(resultCommentList);
         }
 
         /// <summary>
         /// Список комментариев к статье
         /// </summary>
-        /// <returns></returns>
+        /// <returns> View списка комментариев к статье </returns>
         [HttpGet]
         public async Task<IActionResult> ArticleCommentList(int articleId)
         {
-            var commentList = await Task.FromResult(_commentRepository.Get(c => c.ArticleId == articleId, c => c.OrderBy(c => c.Date)));
-            List<CommentViewModel> resultCommetList = _mapper.Map<List<CommentViewModel>>(commentList);
+            var commentList = await Task.FromResult(_commentService.GetByArticle(articleId));
+            List<CommentViewModel> resultCommentList = _mapper.Map<List<CommentViewModel>>(commentList);
 
-            return View(resultCommetList);
+            return View(resultCommentList);
         }
 
         /// <summary>
         /// Получение комментария по ID
         /// </summary>
-        /// <param name="commentId"Идентификатор комментария></param>
-        /// <returns></returns>
+        /// <param name="id"> Идентификатор комментария </param>
+        /// <returns> View комментария </returns>
         [Authorize]
         [HttpGet]
-        public async Task<CommentViewModel> ViewComment(int commentId)
+        public async Task<IActionResult> ViewComment(int id)
         {
-            CommentViewModel resultComment = new CommentViewModel();
+            var commentResponse = await _commentService.Get(id);
 
-            Comment comment = await _commentRepository.Get(commentId);
+            if (!commentResponse.Success)
+            {
+                _logger.LogInformation(commentResponse.Message);
+                return View("NotFound");
+            }
 
-            return _mapper.Map<CommentViewModel>(comment);
+            return View(_mapper.Map<TagViewModel>(commentResponse.Entity));
         }
     }
 }

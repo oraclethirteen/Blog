@@ -5,7 +5,7 @@ namespace Blog.Extensions
 {
     public static class IdentityExtension
     {
-        public static int GetUserId(this IIdentity identity)
+        public static int GeUsertId(this IIdentity identity)
         {
             ClaimsIdentity claimsIdentity = identity as ClaimsIdentity;
 

@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Blog.Models.Article.ArticleViewModel>
+﻿@model IEnumerable<Blog.Models.ArticleViewModel>
 
 @{
-    ViewData["Title"] = "ArticleList";
+    ViewData["Title"] = "Статьи";
 }
 
 <p>
@@ -28,7 +28,9 @@
                             <button type="button" class="btn btn-outline-secondary">
                                 <a asp-controller="Article" asp-action="EditArticle" asp-route-id="@article.Id">Редактировать</a>
                             </button>
-                            <button type="button" class="btn btn-outline-danger">Удалить</button>
+                            <button type="button" class="btn btn-outline-danger">
+                                <a asp-controller="Article" asp-action="Delete" asp-route-id="@article.Id">Удалить</a>
+                            </button>
                         </div>
                     }
                     <div class="card-text text-right">Просмотров: @article.Views</div>
@@ -37,6 +39,3 @@
         </div>
     </div>
 }
-
-
-

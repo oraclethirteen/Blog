@@ -1,4 +1,4 @@
-﻿namespace Blog.Models.Role
+﻿namespace Blog.Models
 {
     public class RoleViewModel
     {

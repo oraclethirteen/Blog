@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Models.Comment
+namespace Blog.Models
 {
     public class CommentEditViewModel
     {
         [HiddenInput]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "* поле 'Комментарий' обязательно для заполнения")]
 
         [Display(Name = "ID статьи")]
         [HiddenInput]
@@ -17,7 +15,7 @@ namespace Blog.Models.Comment
 
         [Required(ErrorMessage = "* поле 'Комментарий' обязательно для заполнения")]
         [DataType(DataType.Text)]
-        [Display(Name = "Комментарий", Prompt = "Введите комментарий")]
+        [Display(Name = "Коментарии", Prompt = "Введите комментарий")]
         public string Content { get; set; }
     }
 }

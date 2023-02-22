@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Blog.Models.Comment.CommentViewModel>
+﻿@model IEnumerable<Blog.Models.CommentViewModel>
 
 @{
     ViewData["Title"] = "Все комментарии";
@@ -6,8 +6,7 @@
 
 <h4>Все комментарии</h4>
 
-@foreach (var comment in Model)
-{
+@foreach (var comment in Model) {
     <div class="form-group">
         <div class="card">
             <div class="card-body">
@@ -15,6 +14,16 @@
                     Комментарий к статье: <a asp-controller="Article" asp-action="ViewArticle" asp-route-id="@comment.Article.Id">@comment.Article.Title</a>
                 </h5>
                 <p class="card-text">@comment.Content</p>
+                <div>
+                    @if(User.IsInRole("Aдминистратор")) 
+                    {
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-outline-danger">
+                                <a asp-controller="Comment" asp-action="Delete" asp-route-id="@comment.Id">Удалить</a>
+                            </button>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
         <p class="text-right">

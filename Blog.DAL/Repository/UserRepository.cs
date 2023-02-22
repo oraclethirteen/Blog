@@ -15,8 +15,8 @@ namespace Blog.DAL.Repository
         {
             return _db.Set<User>()
                 .Include(u => u.UserRoles)
-                .ThenInclude(r => r.Role)
-                .FirstOrDefault(l => l.Login == login);
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefault(u => u.Login == login);
         }
     }
 }

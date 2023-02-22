@@ -1,24 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.DAL.Models.Config
 {
-    /// <summary>
-    /// Кофигурация модели связи статьи и тега
-    /// </summary>
+    // Кофигурация модели связи статьи и тега
     public class ArticleTagConfiguration : IEntityTypeConfiguration<ArticleTag>
     {
         public void Configure(EntityTypeBuilder<ArticleTag> builder)
         {
-            builder.ToTable("ArticleTag").HasKey(x => new { x.ArticleId, x.TagId });
+            builder.ToTable("ArticleTag").HasKey(pt => new { pt.ArticleId, pt.TagId });
 
-            builder.HasOne(x => x.Article)
+            builder.HasOne(pt => pt.Article)
                    .WithMany(t => t.ArticleTags)
-                   .HasForeignKey(c => c.ArticleId);
+                   .HasForeignKey(pt => pt.ArticleId);
 
-            builder.HasOne(x => x.Tag)
+            builder.HasOne(pt => pt.Tag)
                    .WithMany(t => t.ArticleTags)
-                   .HasForeignKey(c => c.TagId);
+                   .HasForeignKey(pt => pt.TagId);
             ;
         }
     }

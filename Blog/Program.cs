@@ -3,9 +3,7 @@ using NLog.Web;
 
 namespace Blog
 {
-    /// <summary>
-    /// Точка входа в программу
-    /// </summary>
+    // Точка входа в программу
     public class Program
     {
         public static void Main(string[] args)
@@ -35,6 +33,7 @@ namespace Blog
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
                 })
                 .ConfigureLogging(logging =>
                 {

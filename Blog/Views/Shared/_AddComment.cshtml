@@ -1,11 +1,10 @@
-﻿@model Blog.Models.Comment.CommentEditViewModel
+﻿@model CommentEditViewModel
 
 <div class="row">
     <div class="col-md-12">
         <form method="post" asp-controller="Comment" asp-action="AddComment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @*<input asp-for="Id" class="form-control" type="hidden"/>*@
-            <input asp-for="ArticleId" class="form-control" type="hidden" />
+            <input asp-for="ArticleId" class="form-control" type="hidden"/>
 
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>

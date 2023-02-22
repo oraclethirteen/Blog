@@ -4,9 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.DAL
 {
-    /// <summary>
-    /// Класс контекста, необходимый для доступа к сущностям БД
-    /// </summary>
+    // Класс контекста, необходимый для доступа к сущностям БД
     public class BlogDbContext : DbContext
     {
         ServiceCollection _serviceProvider = new ServiceCollection();
